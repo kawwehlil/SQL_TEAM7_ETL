@@ -1,7 +1,7 @@
 The dataset is retrieved from Kaggle. The dataset combines the data from IMDB and TMDB open API and GroupLens.
 These sources are open to public where we can update our dataset 
 
-### Extraction
+## Extraction
 
 First, we load the dataset and packages
 
@@ -21,6 +21,11 @@ require('RPostgreSQL')
 #### Create a connection to the database:
 ```r
 pwd <- 'lfytcyux' 
+```
+
+Connect R-studio to Postgre server with RPostgreSQL
+
+```r
 con <- dbConnect(drv = dbDriver('PostgreSQL'),
                  dbname = 'Movie',
                  host = 's19db.apan5310.com', port = 50207,
@@ -30,8 +35,6 @@ data <- read.csv('data.csv')
 data <- data[!(data$revenue==0 | data$budget==0),]
 colnames(data)[colnames(data)=="movieId"] <- "movie_id"
 ```
-
-## Transorming data from the original dataset
 
 ##### movies
 
@@ -78,7 +81,7 @@ colnames(grouplens_ratings)[which(names(grouplens_ratings) == "userId")]<-"user_
 grouplens_ratings$timestamp <- as.POSIXct(grouplens_ratings$timestamp, origin = "1960-01-01", tz = "GMT")
 ```
 
-### ETL Process: Transform (JSON and Relationship tables)
+## Transform 
 
 We use R package `jsonlite` to transform JSON objects into tables.
 
@@ -107,6 +110,11 @@ castdf= castdf[,c('movie_id','cast')] %>% filter(nchar(cast)>2) %>% mutate(js=la
 castdf$cast <- NULL
 castdf$credit_id <- NULL
 castdf$cast_id <- NULL
+```
+
+3. Rename the column names to match our database and add movie_cast_id for reference.
+
+```r
 castdf <- bind_cols('movie_cast_id' = sprintf('ma%07d', 1:nrow(castdf)), castdf)
 colnames(castdf)[which(names(castdf) == "id")]<-"cast_id"
 colnames(castdf)[which(names(castdf) == "gender")]<-"cast_gender"
@@ -116,6 +124,7 @@ colnames(castdf)[which(names(castdf) == "order")]<-"cast_order"
 movies_casts<-castdf %>% select(movie_cast_id, movie_id, cast_id, character, cast_order) %>% distinct(movie_cast_id, .keep_all = TRUE)
 casts<-castdf %>% select(cast_id,cast_name,cast_gender,cast_profile_path) %>% distinct(cast_id, .keep_all = TRUE)
 ```
+4. Select the column we need to join into tables
 
 ##### crews
 ```r
@@ -252,7 +261,11 @@ movies_production_countries <- countrydf %>% select(movie_id, country_abbr) %>% 
 production_countries <- countrydf %>% select(country_abbr, country_name) %>% distinct(country_abbr, .keep_all = TRUE)
 ```
 
-## Connect the tables and write data in the PgAdmin
+## Load
+### Connect the tables and write data in the PgAdmin
+
+1. Use PostgreSQL to create table and store data.
+2. Load our created table from R-studio to PostgreSQL.
 
 ```r
 dbWriteTable(con, name ='movies', value = movies, row.names = FALSE, append = TRUE)
@@ -279,3 +292,4 @@ dbWriteTable(con, name ='movies_casts', value = movies_casts, row.names = FALSE,
 dbWriteTable(con, name ='movies_crews', value = movies_crews, row.names = FALSE, append = TRUE)
 ```
 
+For other tables, there is no transformation process needed. The dataset can be created by joining the columns we need from the original table, filtering out the duplicated data, and renaming the column.
