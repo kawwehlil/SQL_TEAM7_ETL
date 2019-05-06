@@ -1,6 +1,6 @@
 #Load the dataset and packages
 
-```
+```r
 setwd("~/Documents/2019Spring/APAN 5310 - SQL & RELATIONAL DATABASE/assignment/Final Project/the-movies-dataset")
 
 library(plyr)
