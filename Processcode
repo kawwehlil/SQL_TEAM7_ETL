@@ -1,4 +1,10 @@
-#Load the dataset and packages
+The dataset is retrieved from Kaggle. The dataset combines the data from IMDB and TMDB open API and GroupLens.
+These sources are open to public where we can update our dataset 
+
+### Extraction
+
+First, we load the dataset and packages
+
 
 ```r
 setwd("~/Documents/2019Spring/APAN 5310 - SQL & RELATIONAL DATABASE/assignment/Final Project/the-movies-dataset")
