@@ -18,7 +18,8 @@ library(tidyr)
 require('RPostgreSQL')
 ```
 
-# Create a connection to the database:
+#### Create a connection to the database:
+```r
 pwd <- 'lfytcyux' 
 con <- dbConnect(drv = dbDriver('PostgreSQL'),
                  dbname = 'Movie',
@@ -28,37 +29,58 @@ con <- dbConnect(drv = dbDriver('PostgreSQL'),
 data <- read.csv('data.csv')
 data <- data[!(data$revenue==0 | data$budget==0),]
 colnames(data)[colnames(data)=="movieId"] <- "movie_id"
+```
 
 ## Transorming data from the original dataset
-# movies
+
+##### movies
+
+```r
 movies <- data %>% select(movie_id, original_title, original_language,
                           overview, status, revenue, budget, release_date,
                           runtime, popularity, tagline, video) %>% distinct(movie_id, .keep_all = TRUE)
 movies$original_title <- as.character(movies$original_title)
 movies[2095,'original_title'] <- 'How I Flew from London to Paris in 25 hours 11 minutes'
+```
 
-# users
+##### users
+
+```r
 users <- data %>% select(userId, adult) %>% distinct(userId, .keep_all = TRUE)
 colnames(users)[which(names(users) == "userId")]<-"user_id"
+```
 
-# tmdb_votes
+##### tmdb_votes
+
+```r
 tmdb_votes <- data %>% select(tmdbId, vote_average, vote_count) %>% distinct(tmdbId, .keep_all = TRUE)
 colnames(tmdb_votes)[which(names(tmdb_votes) == "tmdbId")]<-"tmdbid"
+```
 
-# tmdb_links
+##### tmdb_links
+
+```r
 tmdb_links <- data %>% select(movie_id, tmdbId) %>% distinct()
 colnames(tmdb_links)[which(names(tmdb_links) == "tmdbId")]<-"tmdbid"
+```
 
-# imdb_links
+##### imdb_links
+
+```r
 imdb_links <- data %>% select(movie_id, imdbId) %>% distinct()
 colnames(imdb_links)[which(names(imdb_links) == "imdbId")]<-"imdbid"
+```
 
-# GroupLens_ratings
+##### GroupLens_ratings
+```r
 grouplens_ratings <- data %>% select(userId, movie_id, rating, timestamp) %>% distinct(userId, movie_id, .keep_all = TRUE)
 colnames(grouplens_ratings)[which(names(grouplens_ratings) == "userId")]<-"user_id"
 grouplens_ratings$timestamp <- as.POSIXct(grouplens_ratings$timestamp, origin = "1960-01-01", tz = "GMT")
+```
 
-# casts
+##### casts
+
+```r
 castdf<-data %>% select(movie_id,cast)
 castdf$cast <- as.character(castdf$cast)
 castdf$cast <- gsub("\"","\'", castdf$cast)
@@ -82,8 +104,10 @@ colnames(castdf)[which(names(castdf) == "profile_path")]<-"cast_profile_path"
 colnames(castdf)[which(names(castdf) == "order")]<-"cast_order"
 movies_casts<-castdf %>% select(movie_cast_id, movie_id, cast_id, character, cast_order) %>% distinct(movie_cast_id, .keep_all = TRUE)
 casts<-castdf %>% select(cast_id,cast_name,cast_gender,cast_profile_path) %>% distinct(cast_id, .keep_all = TRUE)
+```
 
-# crews
+##### crews
+```r
 crewdf<-data %>% select(movie_id,crew)
 crewdf$crew <- as.character(crewdf$crew)
 crewdf$crew <- gsub("\', \'","\", \"", crewdf$crew,fixed = TRUE)
@@ -109,8 +133,10 @@ colnames(crewdf)[which(names(crewdf) == "name")]<-"crew_name"
 colnames(crewdf)[which(names(crewdf) == "profile_path")]<-"crew_profile_path"
 movies_crews<-crewdf %>% select(movie_crew_id, movie_id, crew_id, crew_department,crew_job) %>% distinct(movie_crew_id, .keep_all = TRUE)
 crews<-crewdf %>% select(crew_id,crew_name,crew_gender,crew_profile_path) %>% distinct(crew_id, .keep_all = TRUE)
+```
 
-# collections
+##### collections
+```r
 collectiondf= data %>% select(movie_id, belongs_to_collection)
 collectiondf$belongs_to_collection <- as.character(collectiondf$belongs_to_collection)
 collectiondf$belongs_to_collection <- gsub("None","\"None\"", collectiondf$belongs_to_collection)
@@ -130,8 +156,11 @@ colnames(collectiondf)[which(names(collectiondf) == "poster_path")] <- "collecti
 colnames(collectiondf)[which(names(collectiondf) == "backdrop_path")] <- "collection_backdrop_path"
 movies_collections <- collectiondf %>% select(movie_id, collection_id) %>% distinct()
 collections <- collectiondf %>% select(collection_id, collection_name, collection_poster, collection_backdrop_path) %>% distinct(collection_id, .keep_all = TRUE)
+```
 
-# genres
+##### genres
+
+```r
 genredf= data %>% select(movie_id, genres)
 genredf$genres <- as.character(genredf$genres)
 genredf$genres <- gsub("\'","\"", genredf$genres)
@@ -141,8 +170,11 @@ colnames(genredf)[which(names(genredf) == "name")] <- "genre_name"
 colnames(genredf)[which(names(genredf) == "id")] <- "genre_id"
 movies_genres <- genredf %>% select(movie_id, genre_id) %>% distinct()
 genres <- genredf %>% select(genre_id, genre_name) %>% distinct(genre_id, .keep_all = TRUE)
+```
 
-# keywords
+##### keywords
+
+```r
 keyworddf= data %>% select(movie_id, keywords)
 keyworddf$keywords <- as.character(keyworddf$keywords)
 keyworddf$keywords <- gsub("\', \'","\", \"", keyworddf$keywords,fixed = TRUE)
@@ -159,8 +191,11 @@ colnames(keyworddf)[which(names(keyworddf) == "name")] <- "keyword_name"
 colnames(keyworddf)[which(names(keyworddf) == "id")] <- "keyword_id"
 movies_keywords <- keyworddf %>% select(movie_id, keyword_id) %>% distinct()
 keywords <- keyworddf %>% select(keyword_id, keyword_name) %>% distinct(keyword_id,.keep_all = TRUE)
+```
 
-# spoken_languages
+##### spoken_languages
+
+```r
 languagedf= data %>% select(movie_id, spoken_languages)
 languagedf$spoken_languages <- as.character(languagedf$spoken_languages)
 languagedf$spoken_languages <- gsub("\'","\"", languagedf$spoken_languages)
@@ -170,8 +205,11 @@ colnames(languagedf)[which(names(languagedf) == "name")] <- "language_name"
 colnames(languagedf)[which(names(languagedf) == "iso_639_1")] <- "language_abbr"
 movies_spoken_languages <- languagedf %>% select(movie_id, language_abbr) %>% distinct()
 spoken_languages <- languagedf %>% select(language_abbr, language_name) %>% distinct(language_abbr, .keep_all = TRUE)
+```
 
-# production_companies
+##### production_companies
+
+```r
 companydf= data %>% select(movie_id, production_companies)
 companydf$production_companies <- as.character(companydf$production_companies)
 companydf$production_companies <- gsub("\', \'","\", \"", companydf$production_companies,fixed = TRUE)
@@ -187,8 +225,11 @@ colnames(companydf)[which(names(companydf) == "name")] <- "production_company_na
 colnames(companydf)[which(names(companydf) == "id")] <- "production_company_id"
 movies_production_companies <- companydf %>% select(movie_id, production_company_id) %>% distinct()
 production_companies <- companydf %>% select(production_company_id, production_company_name) %>% distinct(production_company_id, .keep_all = TRUE)
+```
 
-# production_countries
+##### production_countries
+
+```r
 countrydf= data %>% select(movie_id, production_countries)
 countrydf$production_countries <- as.character(countrydf$production_countries)
 countrydf$production_countries <- gsub("\'","\"", countrydf$production_countries)
@@ -198,8 +239,11 @@ colnames(countrydf)[which(names(countrydf) == "name")] <- "country_name"
 colnames(countrydf)[which(names(countrydf) == "iso_3166_1")] <- "country_abbr"
 movies_production_countries <- countrydf %>% select(movie_id, country_abbr) %>% distinct()
 production_countries <- countrydf %>% select(country_abbr, country_name) %>% distinct(country_abbr, .keep_all = TRUE)
+```
 
 ## Connect the tables and write data in the PgAdmin
+
+```r
 dbWriteTable(con, name ='movies', value = movies, row.names = FALSE, append = TRUE)
 dbWriteTable(con, name ='users', value = users, row.names = FALSE, append = TRUE)
 dbWriteTable(con, name ='collections' , value = collections, row.names = FALSE, append = TRUE)
@@ -222,4 +266,7 @@ dbWriteTable(con, name ='movies_production_countries', value = movies_production
 dbWriteTable(con, name ='movies_production_companies', value =movies_production_companies, row.names = FALSE, append = TRUE)
 dbWriteTable(con, name ='movies_casts', value = movies_casts, row.names = FALSE, append = TRUE)
 dbWriteTable(con, name ='movies_crews', value = movies_crews, row.names = FALSE, append = TRUE)
+```
+
+# ETL Process: Transform (JSON and Relationship tables)
 
