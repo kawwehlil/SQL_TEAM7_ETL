@@ -1,7 +1,35 @@
 The dataset is retrieved from Kaggle. The dataset combines the data from IMDB and TMDB open API and GroupLens.
 These sources are open to public where we can update our dataset 
 
-## Extraction
+There are 22 tables that we will transform from the original dataset. Generally, there are 10 tables are paired between the table movies and other tables, and the rest of the tables are entirely independent. We use RStudio to process and upload our data.
+
+Before the transformation, we notice that there is 0 value in the column “budget” and “revenue.” Although it will not influence the result of our transformation, it may affect the analysis we will come up in the future, so we drop rows containing 0 value in “budget” or “revenue” at the beginning. Since then, we will not drop any of our data in the original dataset.
+
+After going through the data, we decide to separate the table <movies> from the original dataset first, as it contains the necessary information of movies and has the most foreign key constraint.
+
+Then we separate the table that does not require further process and can be selected directly from the original dataset. They are <users>, <tmdb_votes>, <tmdb_links>, <imdb_links> and <grouplens_ratings>. We will rename some of the attributes to match the attribute names in the database we created in PgAdmin in this process. In constructing the table <grouplens_ratings>, we typically change the data type of the variable “timestamp,” as it is in integer format, and we should transform into timestamp so to match the data type we have created in the database.
+
+The remaining 16 tables can be processed in pairs, as there are many many to many relations in this database. In each pair, we have 1 table storing necessary information of a character, and another table storing the relationship between the id of the character and the id of movies.  Specifically, all 8 pairs of the tables are in JSON format in the original database, and we can take the “movie_id” and the certain column out, forming a new data frame and then transform into 2 new tables.
+
+For example, as for genre, the table <movies_genres> contains attributes “movie_id” and “genre_id”, while the table <genres> contains attributes “genre_id” and “genre_name”. We then select the columns “movie_id” and “genres” from the original dataset and make it a new data frame named “genredf.” Then we use the “jsonlite” package to unnest the manipulate the data frame into the format we want. We will also go through renaming the column in this process. We now have “genre_id,” “movie_id” and “genre_name” in the “genredf.” Then we will select the distinct pair of “genre_id” and “movie_id” to form a new table named <movies_genres>, and select distinct “genre_id” together with the “genre_name” to form another new table named <genres>. So we have the 2 tables containing the data we want we want through this process.
+
+However, the problems we face when transforming the JSON object into pairs of tables is much more complicated. Specifically, when we deal with the column “collections,” we found that this column is not strictly following the JSON rules, so the package “jsonlite” doesn’t work at first. Then we come up with the idea to add a pair of brackets before and after each row of “collection,” so to make it work in “jsonlite.” Besides, columns like “casts” and “crews” are much more difficult as they are not following JSON rules and have much more accidence. Like we have to transform most of the single quotes to the double quotes in these 2 columns, but there are some single quotes like J’s in the name that we should not make it double quotes. Here we come up with our solution that is very tricky to solve this question by looking for only the combined symbols from and after the single quotes we want to replace, and quotes we don’t want to succeed will leave unattacked. For more details, please go to our R code.
+
+Last but not least, we connect to the PgAdmin and upload all the data we have in the RStudio to the PgAdmin.
+
+ 
+
+Supplementary explanation：
+
+We have made minus adjustments to our schema. Specifically, we change some of the data types and names of the variables for our convenience. If you want to redo our work, please use the updated SQL code below to construct the schema of the database in replace of that provided in the checkpoint 3. All the data are uploaded to the database successfully. Please review our database [Movie] through the username and password provided.
+
+Hostname: s19db.apan5310.com (Links to an external site.)Links to an external site.
+Port:     50207
+Username: postgres
+Password: lfytcyux
+
+Alt- Extraction
+------
 
 First, we load the dataset and packages
 
