@@ -100,7 +100,7 @@ grouplens_ratings$timestamp <- as.POSIXct(grouplens_ratings$timestamp, origin = 
 
 ## Transform 
 
-However, the problems we face when transforming the JSON object into pairs of tables is much more complicated. Specifically, when we deal with the column “collections,” we found that this column is not strictly following the JSON rules, so the package `jsonlite` doesn’t work at first. Then we come up with the idea to add a pair of brackets before and after each row of `collection`, so to make it work in `jsonlite`. 
+However, the problems we face when transforming the JSON object into pairs of tables is much more complicated. Specifically, when we deal with the column “collections,” we found that this column is not strictly following the JSON rules, so the package `jsonlite` doesn’t work at first. Then we come up with the idea to add a pair of brackets before and after each row of collection, so to make it work in `jsonlite`. 
 
 Besides, columns like “casts” and “crews” are much more difficult as they are not following JSON rules and have much more accidence. Like we have to transform most of the single quotes to the double quotes in these 2 columns, but there are some single quotes like J’s in the name that we should not make it double quotes. Here we come up with our solution that is very tricky to solve this question by looking for only the combined symbols from and after the single quotes we want to replace, and quotes we don’t want to succeed will leave unattacked. For more details, please go to our R code.
 
@@ -319,7 +319,7 @@ dbWriteTable(con, name ='movies_crews', value = movies_crews, row.names = FALSE,
 
 We have made minus adjustments to our schema. Specifically, we change some of the data types and names of the variables for our convenience. If you want to redo our work, please use the updated SQL code below to construct the schema of the database in replace of that provided in the checkpoint 3. All the data are uploaded to the database successfully. Please review our database [Movie] through the username and password provided.
 
-Hostname: s19db.apan5310.com (Links to an external site.)Links to an external site.
-Port:     50207
+Hostname: s19db.apan5310.com 
 Username: postgres
+Port:     50207
 Password: lfytcyux
