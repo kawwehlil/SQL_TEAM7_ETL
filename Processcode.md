@@ -78,6 +78,12 @@ colnames(grouplens_ratings)[which(names(grouplens_ratings) == "userId")]<-"user_
 grouplens_ratings$timestamp <- as.POSIXct(grouplens_ratings$timestamp, origin = "1960-01-01", tz = "GMT")
 ```
 
+### ETL Process: Transform (JSON and Relationship tables)
+
+We use R package `jsonlite` to transform JSON objects into tables.
+
+1. The original JSON objects are not in a standard form because of the single quote. We change the single quote into double quote.
+
 ##### casts
 
 ```r
@@ -92,6 +98,11 @@ castdf$cast <- gsub(": \'",": \"", castdf$cast,fixed = TRUE)
 castdf$cast <- gsub(", \'",", \"", castdf$cast)
 castdf$cast <- gsub("None","\"None\"", castdf$cast)
 castdf$cast <- gsub("\\", "", castdf$cast,fixed = TRUE)
+```
+
+2. The `jsonlite` package transforms the JSON column into a table.
+
+```r
 castdf= castdf[,c('movie_id','cast')] %>% filter(nchar(cast)>2) %>% mutate(js=lapply(cast,fromJSON)) %>% unnest(js)
 castdf$cast <- NULL
 castdf$credit_id <- NULL
@@ -267,6 +278,4 @@ dbWriteTable(con, name ='movies_production_companies', value =movies_production_
 dbWriteTable(con, name ='movies_casts', value = movies_casts, row.names = FALSE, append = TRUE)
 dbWriteTable(con, name ='movies_crews', value = movies_crews, row.names = FALSE, append = TRUE)
 ```
-
-# ETL Process: Transform (JSON and Relationship tables)
 
