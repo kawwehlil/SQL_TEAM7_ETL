@@ -65,7 +65,10 @@ Then we separate the table that does not require further process and can be sele
 
 The remaining 16 tables can be processed in pairs, as there are many many to many relations in this database. In each pair, we have 1 table storing necessary information of a character, and another table storing the relationship between the id of the character and the id of movies.  Specifically, all 8 pairs of the tables are in JSON format in the original database, and we can take the “movie_id” and the certain column out, forming a new data frame and then transform into 2 new tables.
 
-For example, as for genre, the table <movies_genres> contains attributes “movie_id” and “genre_id”, while the table <genres> contains attributes “genre_id” and “genre_name”. We then select the columns “movie_id” and “genres” from the original dataset and make it a new data frame named “genredf.” Then we use the “jsonlite” package to unnest the manipulate the data frame into the format we want. We will also go through renaming the column in this process. We now have “genre_id,” “movie_id” and “genre_name” in the “genredf.” Then we will select the distinct pair of “genre_id” and “movie_id” to form a new table named <movies_genres>, and select distinct “genre_id” together with the “genre_name” to form another new table named <genres>. So we have the 2 tables containing the data we want we want through this process.
+For example, as for genre, the table <movies_genres> contains attributes “movie_id” and “genre_id”, while the table <genres> contains attributes “genre_id” and “genre_name”. We then select the columns “movie_id” and “genres” from the original dataset and make it a new data frame named “genredf.” 
+  
+Then we use the `jsonlite` package to unnest the manipulate the data frame into the format we want. We will also go through renaming the column in this process. We now have `genre_id`, `movie_id` and `genre_name` in the `genred`. Then we will select the distinct pair of `genre_id` and `movie_id` to form a new table named <movies_genres>, and select distinct `genre_id` together with the `genre_name` to form another new table named <genres>. So we have the 2 tables containing the data we want we want through this process.
+
 
 ##### tmdb_votes
 
@@ -97,8 +100,11 @@ grouplens_ratings$timestamp <- as.POSIXct(grouplens_ratings$timestamp, origin = 
 
 ## Transform 
 
-However, the problems we face when transforming the JSON object into pairs of tables is much more complicated. Specifically, when we deal with the column “collections,” we found that this column is not strictly following the JSON rules, so the package “jsonlite” doesn’t work at first. Then we come up with the idea to add a pair of brackets before and after each row of “collection,” so to make it work in “jsonlite.” Besides, columns like “casts” and “crews” are much more difficult as they are not following JSON rules and have much more accidence. Like we have to transform most of the single quotes to the double quotes in these 2 columns, but there are some single quotes like J’s in the name that we should not make it double quotes. Here we come up with our solution that is very tricky to solve this question by looking for only the combined symbols from and after the single quotes we want to replace, and quotes we don’t want to succeed will leave unattacked. For more details, please go to our R code.
+However, the problems we face when transforming the JSON object into pairs of tables is much more complicated. Specifically, when we deal with the column “collections,” we found that this column is not strictly following the JSON rules, so the package `jsonlite` doesn’t work at first. Then we come up with the idea to add a pair of brackets before and after each row of `collection`, so to make it work in `jsonlite`. 
 
+Besides, columns like “casts” and “crews” are much more difficult as they are not following JSON rules and have much more accidence. Like we have to transform most of the single quotes to the double quotes in these 2 columns, but there are some single quotes like J’s in the name that we should not make it double quotes. Here we come up with our solution that is very tricky to solve this question by looking for only the combined symbols from and after the single quotes we want to replace, and quotes we don’t want to succeed will leave unattacked. For more details, please go to our R code.
+
+For other tables, there is no transformation process needed. The dataset can be created by joining the columns we need from the original table, filtering out the duplicated data, and renaming the column.
 We use R package `jsonlite` to transform JSON objects into tables.
 
 1. The original JSON objects are not in a standard form because of the single quote. We change the single quote into double quote.
@@ -308,10 +314,8 @@ dbWriteTable(con, name ='movies_casts', value = movies_casts, row.names = FALSE,
 dbWriteTable(con, name ='movies_crews', value = movies_crews, row.names = FALSE, append = TRUE)
 ```
 
-For other tables, there is no transformation process needed. The dataset can be created by joining the columns we need from the original table, filtering out the duplicated data, and renaming the column.
 
-
-Supplementary explanation：
+**Supplementary explanation:**
 
 We have made minus adjustments to our schema. Specifically, we change some of the data types and names of the variables for our convenience. If you want to redo our work, please use the updated SQL code below to construct the schema of the database in replace of that provided in the checkpoint 3. All the data are uploaded to the database successfully. Please review our database [Movie] through the username and password provided.
 
