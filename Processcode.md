@@ -317,5 +317,5 @@ dbWriteTable(con, name ='movies_crews', value = movies_crews, row.names = FALSE,
 
 **Supplementary explanation:**
 
-We have made minus adjustments to our schema. Specifically, we change some of the data types and names of the variables for our convenience. If you want to redo our work, please use the updated SQL code below to construct the schema of the database in replace of that provided in the checkpoint 3. All the data are uploaded to the database successfully. Please review our database [Movie] through the username and password provided.
+We have made minus adjustments to our schema. Specifically, we change some of the data types and names of the variables for our convenience. If you want to redo our work, please use the updated SQL code below to construct the schema of the database in replace of that provided in the checkpoint3. All the data are uploaded to the database successfully. Please review our database [Movie] through the username and password provided.
 
