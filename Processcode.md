@@ -28,7 +28,7 @@ Port:     50207
 Username: postgres
 Password: lfytcyux
 
-Alt- Extraction
+Extraction
 ------
 
 First, we load the dataset and packages
