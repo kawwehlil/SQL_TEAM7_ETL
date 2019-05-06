@@ -43,6 +43,17 @@ colnames(data)[colnames(data)=="movieId"] <- "movie_id"
 Before the transformation, we notice that there is 0 value in the column “budget” and “revenue.” Although it will not influence the result of our transformation, it may affect the analysis we will come up in the future, so we drop rows containing 0 value in “budget” or “revenue” at the beginning. Since then, we will not drop any of our data in the original dataset.
 
 After going through the data, we decide to separate the table <movies> from the original dataset first, as it contains the necessary information of movies and has the most foreign key constraint.
+  
+## Transform 
+
+However, the problems we face when transforming the JSON object into pairs of tables is much more complicated. Specifically, when we deal with the column “collections,” we found that this column is not strictly following the JSON rules, so the package `jsonlite` doesn’t work at first. Then we come up with the idea to add a pair of brackets before and after each row of collection, so to make it work in `jsonlite`. 
+
+Besides, columns like “casts” and “crews” are much more difficult as they are not following JSON rules and have much more accidence. Like we have to transform most of the single quotes to the double quotes in these 2 columns, but there are some single quotes like J’s in the name that we should not make it double quotes. Here we come up with our solution that is very tricky to solve this question by looking for only the combined symbols from and after the single quotes we want to replace, and quotes we don’t want to succeed will leave unattacked. For more details, please go to our R code.
+
+For other tables, there is no transformation process needed. The dataset can be created by joining the columns we need from the original table, filtering out the duplicated data, and renaming the column.
+We use R package `jsonlite` to transform JSON objects into tables.
+
+1. The original JSON objects are not in a standard form because of the single quote. We change the single quote into double quote.
 
 ##### movies
 
@@ -97,17 +108,6 @@ grouplens_ratings <- data %>% select(userId, movie_id, rating, timestamp) %>% di
 colnames(grouplens_ratings)[which(names(grouplens_ratings) == "userId")]<-"user_id"
 grouplens_ratings$timestamp <- as.POSIXct(grouplens_ratings$timestamp, origin = "1960-01-01", tz = "GMT")
 ```
-
-## Transform 
-
-However, the problems we face when transforming the JSON object into pairs of tables is much more complicated. Specifically, when we deal with the column “collections,” we found that this column is not strictly following the JSON rules, so the package `jsonlite` doesn’t work at first. Then we come up with the idea to add a pair of brackets before and after each row of collection, so to make it work in `jsonlite`. 
-
-Besides, columns like “casts” and “crews” are much more difficult as they are not following JSON rules and have much more accidence. Like we have to transform most of the single quotes to the double quotes in these 2 columns, but there are some single quotes like J’s in the name that we should not make it double quotes. Here we come up with our solution that is very tricky to solve this question by looking for only the combined symbols from and after the single quotes we want to replace, and quotes we don’t want to succeed will leave unattacked. For more details, please go to our R code.
-
-For other tables, there is no transformation process needed. The dataset can be created by joining the columns we need from the original table, filtering out the duplicated data, and renaming the column.
-We use R package `jsonlite` to transform JSON objects into tables.
-
-1. The original JSON objects are not in a standard form because of the single quote. We change the single quote into double quote.
 
 ##### casts
 
