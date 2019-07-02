@@ -53,7 +53,7 @@ For example, as for genre, the table <movies_genres> contains attributes “movi
 
 However, the problems we face when transforming the JSON object into pairs of tables is much more complicated. Specifically, when we deal with the column “collections”, we found that this column is not strictly following the JSON rules, so the package “jsonlite” doesn’t work at first. Then we come up with the idea to add a pair of brackets before and after each row of “collection”, so to make it work in “jsonlite”. Besides, columns like “casts” and “crews” are much more difficult as they are not following JSON rules and have much more accidence. Like we have to transform most of the single quotes to the double quotes in these 2 columns, but there are some single quotes like J’s in the name that we should not make it double quotes. Here we come up with our solution that is very tricky to solve this question by looking for only the combined symbols from and after the single quotes we want to replace, and quotes we don’t want to replace will leave unattacked. For more details please go to our R code. 
 
-Last but not least, we connect to the PgAdmin and upload all the data we have in the RStudio to the PgAdmin. The SQL code for normalization please refer to the Appendix
+Last but not least, we connect to the PgAdmin and upload all the data we have in the RStudio to the PgAdmin.
 
 
 
