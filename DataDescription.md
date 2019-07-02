@@ -25,8 +25,6 @@ We will create interfaces using Metabase to visualize the performance of our mov
 
 #### Weekly analytic report
 We will come up with our prediction as well as our recommendation in the weekly analytic report for the business decision.
-Please click the link below to see the ER-diagram of our database: ER-Diagram.
-Please click the link below to see the code to create our database: SQL CODE.
 
 #### Normalization Plan
 Our data comes in an unnormalized form, with JSON objects in some of the column. We have designed a normalization plan to transform it from unnormalized dataset to 3NF. After the normalization process, we have 16 tables in 3NF. 
